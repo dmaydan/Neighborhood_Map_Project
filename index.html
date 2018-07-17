@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="styles.css">
+<div class="container">
+	<div class="options-box">
+		<div data-bind="foreach: listOfPoints">
+			<p data-bind="text: title"></p>
+		</div>
+		<p>
+		    Select a car:
+		    <select data-bind="options: filterOptions, value: selectedOption, optionsText: 'name'"></select>
+		</p>
+	</div>
+	<div id="map"></div>
+</div>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJTlzrQJskgei8xVjzw7Fiwch2tyTeeiY&v=3&callback=initMap"></script>
+<script type='text/javascript' src='knockout-3.4.2.js'></script>
+<script type='text/javascript' src='app.js'></script>
+
