@@ -1,17 +1,42 @@
-<link rel="stylesheet" href="styles.css">
-<div class="container">
-	<div class="options-box">
-		<div data-bind="foreach: listOfPoints">
-			<p data-bind="text: title"></p>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<link rel="stylesheet" href="styles.css">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
+	</head>
+	<body>
+		<nav class="navbar">
+			<span class="open-slide">
+				<a href="#">
+					<svg width="30" height="30">
+						<path d="M0,5 30,5" stroke="#5C91D2" stroke-width="4"/>
+						<path d="M0,14 30,14" stroke="#5C91D2" stroke-width="4"/>
+						<path d="M0,23 30,23" stroke="#5C91D2" stroke-width="4"/>
+					</svg>
+				</a>
+			</span>
+		</nav>
+		<div id="side-menu" class="side-nav">
+			<a href="#" class="btn-close">&times;</a>
+			<div class="sidebar">
+				<h1>NYC Locations</h1>
+				<div class="custom-select">
+					<select data-bind="options: filterOptions, value: selectedOption, optionsText: 'name'"></select>
+				</div>
+				<div data-bind="foreach: listOfPoints">
+					<p data-bind="text: title, click: $parent.populateInfoWindow_"></p>
+				</div>
+			</div>
 		</div>
-		<p>
-		    Select a car:
-		    <select data-bind="options: filterOptions, value: selectedOption, optionsText: 'name'"></select>
-		</p>
-	</div>
-	<div id="map"></div>
-</div>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJTlzrQJskgei8xVjzw7Fiwch2tyTeeiY&v=3&callback=initMap"></script>
-<script type='text/javascript' src='knockout-3.4.2.js'></script>
-<script type='text/javascript' src='app.js'></script>
+		<div id="main">
+			<div id="map"></div>
+		</div>
+		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJTlzrQJskgei8xVjzw7Fiwch2tyTeeiY&v=3&callback=initMap" onerror="failMap()"></script>
+		<script type='text/javascript' src='knockout-3.4.2.js'></script>
+		<script type='text/javascript' src='jquery-3.3.1.min.js'></script>
+		<script type='text/javascript' src='app.js'></script>
+	</body>
+</html>
 

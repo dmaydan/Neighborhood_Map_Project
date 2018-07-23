@@ -1,6 +1,21 @@
+$('span a').on('click', function(){
+	openSlideMenu();
+}) ;
+$('div a').on('click', function(){
+	closeSlideMenu();
+}) ;
+function openSlideMenu(){
+	document.getElementById('side-menu').style.width = '285px';
+	document.getElementById('main').style.marginLeft = '285px';
+}
 
-
-
+function closeSlideMenu(){
+	document.getElementById('side-menu').style.width = '0';
+	document.getElementById('main').style.marginLeft = '0';
+}
+function failMap() {
+	alert("Failed to Retrieve Google Maps Resources");
+}
 var map;
 // Create a new blank array for all the listing markers.
 var markers = [];
@@ -81,26 +96,18 @@ function initMap() {
 	});
 	// These are the real estate listings that will be shown to the user.
 	// Normally we'd have these in a database instead.
-	var locations = [
-		{title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-		{title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-		{title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-		{title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-		{title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-		{title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-	];
 	var largeInfowindow = new google.maps.InfoWindow();
 	// Style the markers a bit. This will be our listing marker icon.
 	var defaultIcon = makeMarkerIcon('0091ff');
 	// Create a "highlighted location" marker color for when the user
 	// mouses over the marker.
 	var highlightedIcon = makeMarkerIcon('FFFF24');
-	var largeInfowindow = new google.maps.InfoWindow();
 	// The following group uses the location array to create an array of markers on initialize.
-	for (var i = 0; i < locations.length; i++) {
+	for (var i = 0; i < window.locations.length; i++) {
+		console.log("added marker")
 		// Get the position from the location array.
-		var position = locations[i].location;
-		var title = locations[i].title;
+		var position = window.locations[i].location;
+		var title = window.locations[i].title;
 		// Create a marker per location, and put into markers array.
 		var marker = new google.maps.Marker({
 			position: position,
@@ -125,7 +132,8 @@ function initMap() {
 			this.setIcon(defaultIcon);
 		});
 	}
-	showListings();
+	showListings()
+	console.log("completed callback")
 }
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
@@ -133,13 +141,50 @@ function initMap() {
 function populateInfoWindow(marker, infowindow) {
 	// Check to make sure the infowindow is not already opened on this marker.
 	if (infowindow.marker != marker) {
-		infowindow.marker = marker;
-		infowindow.setContent('<div>' + marker.title + '</div>');
-		infowindow.open(map, marker);
-		// Make sure the marker property is cleared if the infowindow is closed.
-		infowindow.addListener('closeclick', function() {
-			infowindow.marker = null;
+		var wikiURL = 'http:en.wikipedia.org/w/api.php?action=opensearch&search='+marker.title+'&format=json&callback=wikiCallback';
+		var wikiRequestTimeout = setTimeout(function() {
+			var htmlContent = 'Failed to Retrieve Wikipedia Resources';
+			infowindow.marker = marker;
+			infowindow.setContent(htmlContent);
+			infowindow.open(map, marker);
+			// Make sure the marker property is cleared if the infowindow is closed.
+			infowindow.addListener('closeclick', function() {
+				infowindow.marker = null;
+			});
+		}, 5000);
+		$.ajax({
+			url: wikiURL,
+			dataType: 'jsonp',
+			success: function(response) {
+				var htmlContent = '<p>Wikipedia Links</p>';
+				var articleList = response[1];
+				if (articleList[0]) {
+					articleStr = articleList[0];
+					var url = 'http:en.wikipedia.org/wiki/'+ articleStr;
+					htmlContent += '<p><a target="_blank" href="' + url + '">' + articleStr + '</a></p>';
+					htmlContent = '<div>' + marker.title + '</div>' + '<div>' + htmlContent + '</div>';
+					infowindow.marker = marker;
+					infowindow.setContent(htmlContent);
+					infowindow.open(map, marker);
+					// Make sure the marker property is cleared if the infowindow is closed.
+					infowindow.addListener('closeclick', function() {
+						infowindow.marker = null;
+					});
+				}
+				else {
+					htmlContent += '<p>No Wikipedia Articles on This Topic</p>';
+					infowindow.marker = marker;
+					infowindow.setContent(htmlContent);
+					infowindow.open(map, marker);
+					// Make sure the marker property is cleared if the infowindow is closed.
+					infowindow.addListener('closeclick', function() {
+						infowindow.marker = null;
+					});
+				}
+				clearTimeout(wikiRequestTimeout);
+			}
 		});
+
 	}
 }
 // This function will loop through the markers array and display them all.
@@ -179,36 +224,61 @@ function bounceAnimation(marker) {
 		}, 700);
 	});
 }
-
+function render(categoryToFilter, _locations) {
+	console.log("render occurs")
+	var bounds = new google.maps.LatLngBounds();
+	if (categoryToFilter === 'Filter') {
+		for (var i = 0; i < _locations.length; i++) {
+			markers[i].setMap(map);
+			bounds.extend(markers[i].position);
+		}
+	}
+	else {
+		for (var i = 0; i < _locations.length; i++) {
+			if (_locations[i].category + 's' !== categoryToFilter)
+				markers[i].setMap(null);
+			else {
+				markers[i].setMap(map);
+				bounds.extend(markers[i].position);
+			}
+		}
+	}
+	map.fitBounds(bounds);
+}
 
 
 
 var locations = [
-	{title: 'Solomon R. Guggenheim Museum', category: 'Museum', location: {lat: 40.7830, lng: 73.9590}},
-	{title: 'Prospect Park', category: 'Park', location: {lat: 40.6602, lng: 73.9690}},
-	{title: 'The Cloisters', category: 'Museum', location: {lat: 40.8649, lng: 73.9317}},
-	{title: 'Whitney Museum of American Art', category: 'Museum', location: {lat: 40.7829, lng: 73.9654}},
-	{title: 'One World Trade Center', category: 'Skyscraper', location: {lat: 40.7127, lng: 74.0134}},
+	{title: 'Solomon R. Guggenheim Museum', category: 'Museum', location: {lat: 40.7830, lng: -73.9590}},
+	{title: 'Prospect Park', category: 'Park', location: {lat: 40.6602, lng: -73.9690}},
+	{title: 'The Cloisters', category: 'Museum', location: {lat: 40.8649, lng: -73.9317}},
+	{title: 'Whitney Museum of American Art', category: 'Museum', location: {lat: 40.7829, lng: -73.9654}},
+	{title: 'One World Trade Center', category: 'Skyscraper', location: {lat: 40.7127, lng: -74.0134}},
 	{title: 'Empire State Building', category: 'Skyscraper', location: {lat: 40.7484, lng: -73.9632393}},
-	{title: 'Metropolitan Museum of Art', category: 'Museum', location: {lat: 40.7794, lng: 73.9632}},
-	{title: 'High Line', category: 'Park', location: {lat: 40.7480, lng: 74.0048}},
-	{title: 'The Battery', category: 'Park', location: {lat: 40.7033, lng: 74.0170}},
-	{title: 'Museum of Modern Art', category: 'Museum', location: {lat: 40.7614, lng: 73.9776}},
-	{title: 'Chrysler Building', category: 'Skyscraper', location: {lat: 40.7516, lng: 73.9755}},
-	{title: 'Central Park', category: 'Park', location: {lat: 40.7396, lng: 74.0089}},
-	{title: 'Flatiron Building', category: 'Skyscraper', location: {lat: 40.7411, lng: 73.9897}},
-	{title: 'Brooklyn Botanic Garden', category: 'Park', location: {lat: 40.6694, lng: 73.9624}}	
+	{title: 'Metropolitan Museum of Art', category: 'Museum', location: {lat: 40.7794, lng: -73.9632}},
+	{title: 'High Line', category: 'Park', location: {lat: 40.7480, lng: -74.0048}},
+	{title: 'The Battery', category: 'Park', location: {lat: 40.7033, lng: -74.0170}},
+	{title: 'Museum of Modern Art', category: 'Museum', location: {lat: 40.7614, lng: -73.9776}},
+	{title: 'Chrysler Building', category: 'Skyscraper', location: {lat: 40.7516, lng: -73.9755}},
+	{title: 'Central Park', category: 'Park', location: {lat: 40.7396, lng: -74.0089}},
+	{title: 'Flatiron Building', category: 'Skyscraper', location: {lat: 40.7411, lng: -73.9897}},
+	{title: 'Brooklyn Botanic Garden', category: 'Park', location: {lat: 40.6694, lng: -73.9624}}	
 ];
 var ViewModel = function () {
 	var self = this;
+	this.firstTime = true;
 	this.listOfPoints = ko.observableArray(locations);
-	this.filterOptions = [{id: 'all', name: 'All'}, {id: 'parks', name: 'Parks'}, {id: 'skyscrapers', name: 'Skyscrapers'}, {id: 'museums', name: 'Museums'}];
+	this.filterOptions = [{id: 'filter', name: 'Filter'}, {id: 'parks', name: 'Parks'}, {id: 'skyscrapers', name: 'Skyscrapers'}, {id: 'museums', name: 'Museums'}];
 	this.selectedOption = ko.observable();
 	this.selectedOption.subscribe(function(obj) {
-		console.log('It changed!');
+		console.log('changed');
+		if (self.firstTime) {
+			self.firstTime = false;
+			return;
+		}
 		self.listOfPoints([]);
 		var categoryToFilter = obj.name;
-		if (categoryToFilter === 'All') {
+		if (categoryToFilter === 'Filter') {
 			self.listOfPoints(locations);
 		}
 		else {
@@ -219,19 +289,95 @@ var ViewModel = function () {
 				self.listOfPoints.push(locations[i]);
 			}
 		}
+		window.render(categoryToFilter, window.locations);
 	});
+	this.populateInfoWindow_ = function(data) {
+		var targetIndex;
+		for (var i = 0; i < window.locations.length; i++) {
+			if (data === locations[i]){
+				targetIndex = i;
+				break;
+			}
+		}
+		var targetMarker = window.markers[i];
+		google.maps.event.trigger(targetMarker, 'click');
+	}
 }
 
 ko.applyBindings(new ViewModel());
-var delayInMilliseconds = 3000; //1 second
 
-setTimeout(function() {
-  //your code to be executed after 1 second
-}, delayInMilliseconds);
-hideListings();
-var delayInMilliseconds = 3000; //1 second
 
-setTimeout(function() {
-  //your code to be executed after 1 second
-}, delayInMilliseconds);
-showListings();
+var x, i, j, selElmnt, a, b, c;
+/*look for any elements with the class "custom-select":*/
+x = document.getElementsByClassName("custom-select");
+for (i = 0; i < x.length; i++) {
+	selElmnt = x[i].getElementsByTagName("select")[0];
+	/*for each element, create a new DIV that will act as the selected item:*/
+	a = document.createElement("DIV");
+	a.setAttribute("class", "select-selected");
+	a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+	x[i].appendChild(a);
+	/*for each element, create a new DIV that will contain the option list:*/
+	b = document.createElement("DIV");
+	b.setAttribute("class", "select-items select-hide");
+	for (j = 0; j < selElmnt.length; j++) {
+		/*for each option in the original select element,
+		create a new DIV that will act as an option item:*/
+		c = document.createElement("DIV");
+		c.innerHTML = selElmnt.options[j].innerHTML;
+		c.addEventListener("click", function(e) {
+				/*when an item is clicked, update the original select box,
+				and the selected item:*/
+				var y, i, k, s, h;
+				s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+				h = this.parentNode.previousSibling;
+				for (i = 0; i < s.length; i++) {
+					if (s.options[i].innerHTML == this.innerHTML) {
+						s.selectedIndex = i;
+						h.innerHTML = this.innerHTML;
+						y = this.parentNode.getElementsByClassName("same-as-selected");
+						for (k = 0; k < y.length; k++) {
+							y[k].removeAttribute("class");
+						}
+						this.setAttribute("class", "same-as-selected");
+						break;
+					}
+				}
+				h.click();
+				$('select').trigger('change');
+		});
+		b.appendChild(c);
+	}
+	x[i].appendChild(b);
+	a.addEventListener("click", function(e) {
+			/*when the select box is clicked, close any other select boxes,
+			and open/close the current select box:*/
+			e.stopPropagation();
+			closeAllSelect(this);
+			this.nextSibling.classList.toggle("select-hide");
+			this.classList.toggle("select-arrow-active");
+		});
+}
+function closeAllSelect(elmnt) {
+	/*a function that will close all select boxes in the document,
+	except the current select box:*/
+	var x, y, i, arrNo = [];
+	x = document.getElementsByClassName("select-items");
+	y = document.getElementsByClassName("select-selected");
+	for (i = 0; i < y.length; i++) {
+		if (elmnt == y[i]) {
+			arrNo.push(i)
+		} else {
+			y[i].classList.remove("select-arrow-active");
+		}
+	}
+	for (i = 0; i < x.length; i++) {
+		if (arrNo.indexOf(i)) {
+			x[i].classList.add("select-hide");
+		}
+	}
+}
+/*if the user clicks anywhere outside the select box,
+then close all select boxes:*/
+document.addEventListener("click", closeAllSelect);
+
