@@ -1,25 +1,4 @@
-$('span a').on('click', function(){
-	openSlideMenu();
-}) ;
-$('div a').on('click', function(){
-	closeSlideMenu();
-}) ;
-function openSlideMenu(){
-	document.getElementById('side-menu').style.width = '285px';
-	document.getElementById('main').style.marginLeft = '285px';
-}
-
-function closeSlideMenu(){
-	document.getElementById('side-menu').style.width = '0';
-	document.getElementById('main').style.marginLeft = '0';
-}
-function failMap() {
-	alert("Failed to Retrieve Google Maps Resources");
-}
-var map;
-// Create a new blank array for all the listing markers.
-var markers = [];
-function initMap() {
+window.initMap = function() {
 	// Create a styles array to use with the map.
 	var styles = [
 		{
@@ -141,7 +120,7 @@ function initMap() {
 function populateInfoWindow(marker, infowindow) {
 	// Check to make sure the infowindow is not already opened on this marker.
 	if (infowindow.marker != marker) {
-		var wikiURL = 'http:en.wikipedia.org/w/api.php?action=opensearch&search='+marker.title+'&format=json&callback=wikiCallback';
+		var wikiURL = 'https://en.wikipedia.org/w/api.php?action=opensearch&search='+marker.title+'&format=json&callback=wikiCallback';
 		var wikiRequestTimeout = setTimeout(function() {
 			var htmlContent = 'Failed to Retrieve Wikipedia Resources';
 			infowindow.marker = marker;
@@ -245,7 +224,27 @@ function render(categoryToFilter, _locations) {
 	}
 	map.fitBounds(bounds);
 }
+$('span a').on('click', function(){
+	openSlideMenu();
+}) ;
+$('div a').on('click', function(){
+	closeSlideMenu();
+}) ;
+function openSlideMenu(){
+	document.getElementById('side-menu').style.width = '285px';
+	document.getElementById('main').style.marginLeft = '285px';
+}
 
+function closeSlideMenu(){
+	document.getElementById('side-menu').style.width = '0';
+	document.getElementById('main').style.marginLeft = '0';
+}
+function failMap() {
+	alert("Failed to Retrieve Google Maps Resources");
+}
+var map;
+// Create a new blank array for all the listing markers.
+var markers = [];
 
 
 var locations = [

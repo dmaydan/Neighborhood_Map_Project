@@ -31,7 +31,7 @@ body{
 .navbar{
 	background-color:#212121;
 	overflow:hidden;
-	height: 10%;
+	height: 65px;
 }
 .navbar a{
 	float:left;
@@ -71,7 +71,9 @@ body{
 }
 
 #main {
-	height:90%;
+	height: -moz-calc(100% - 65px);
+	height: -webkit-calc(100% - 65px);
+	height: calc(100% - 65px);
 	overflow:hidden;
 	width:100%;
 }
