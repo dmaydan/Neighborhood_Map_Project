@@ -1,5 +1,5 @@
 <h1>Neighborhood Map Project</h1>
-This is my project submission for Udacity's Full Stack Web Developer nanodegree's item catalog project. The goal of this project was to develop a single page application featuring a map of a neighborhood that includes highlighted locations, third-party data about those locations, and various ways to browse the content.  
+This is my project submission for Udacity's Full Stack Web Developer nanodegree's neighborhood map project. The goal of this project was to develop a single page application featuring a map of a neighborhood that includes highlighted locations, third-party data about those locations, and various ways to browse the content.  
 <h2>Demo</h2>
 A live demo of the project hosted by heroku is avaliable at https://neighborhood-map-proj.herokuapp.com. Please give the page 20 seconds to startup because the free heroku web dyno goes to sleep after 30 minutes of inactivity.
 <h2>Run on your Own</h2>
