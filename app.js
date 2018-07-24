@@ -139,7 +139,7 @@ function populateInfoWindow(marker, infowindow) {
 				var articleList = response[1];
 				if (articleList[0]) {
 					articleStr = articleList[0];
-					var url = 'http:en.wikipedia.org/wiki/'+ articleStr;
+					var url = 'http://en.wikipedia.org/wiki/'+ articleStr;
 					htmlContent += '<p><a target="_blank" href="' + url + '">' + articleStr + '</a></p>';
 					htmlContent = '<div>' + marker.title + '</div>' + '<div>' + htmlContent + '</div>';
 					infowindow.marker = marker;
