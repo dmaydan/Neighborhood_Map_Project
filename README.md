@@ -1,7 +1,7 @@
 <h1>Neighborhood Map Project</h1>
 This is my project submission for Udacity's Full Stack Web Developer nanodegree's neighborhood map project. The goal of this project was to develop a single page application featuring a map of a neighborhood that includes highlighted locations, third-party data about those locations, and various ways to browse the content.  
 <h2>Demo</h2>
-A live demo of the project hosted by heroku is avaliable at https://neighborhood-map-proj.herokuapp.com. Please give the page 20 seconds to startup because the free heroku web dyno goes to sleep after 30 minutes of inactivity.
+A live demo of the project hosted by heroku is avaliable at https://dmaydan.github.io/Neighborhood_Map_Project.
 <h2>Run on your Own</h2>
 In order to actually run this website on your own machine you will need to clone this repo. Then, you will need to generate your own API credentials for the Google Maps Javascript API. To do that follow these steps:
 <ol>
